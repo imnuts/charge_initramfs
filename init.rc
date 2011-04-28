@@ -424,7 +424,7 @@ on boot
 	chown root radio /proc/cmdline
 
 # GOTA
-	chmod 0777 /system/etc/install-recovery.sh
+#	chmod 0777 /system/etc/install-recovery.sh
 
 # magnetic sensor yamaha
 
@@ -702,10 +702,10 @@ service installd /system/bin/installd
 
 # GOTA
 # to update incremental image of recovery partition
-service flash_recovery /system/bin/sh /system/etc/install-recovery.sh
-	user root
-	console
-	oneshot
+#service flash_recovery /system/bin/sh /system/etc/install-recovery.sh
+#	user root
+#	console
+#	oneshot
 
 # magnetic sensor yamaha
 	service sensor-daemon /system/bin/sensorserver_yamaha
