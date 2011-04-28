@@ -197,7 +197,7 @@ loglevel 3
 	chown root system /sys/class/gpio/gpio120/value
 	chmod 664 /sys/class/gpio/gpio120/value
 
-#pgps daemon
+# pgps daemon
 	mkdir /data/rxn 0771 system system
 	chown system system /data/rxn
 	chmod 0771 /data/rxn 
