@@ -596,22 +596,22 @@ service media /system/bin/mediaserver
 	group system audio camera graphics inet net_bt net_bt_admin net_raw sdcard_rw log radio
 	ioprio rt 4
 
-#service bootanim /system/bin/bootanimation
-#	user graphics
-#	group graphics
-#	disabled
-#	oneshot
+service bootanim /system/bin/bootanimation
+	user graphics
+	group graphics
+	disabled
+	oneshot
 
 service playsound /system/bin/playsound
 	user root
 	disabled
 	oneshot
 
-service samsungani /system/bin/samsungani
-	user graphics
-	group graphics
-	disabled
-	oneshot
+#service samsungani /system/bin/samsungani
+#	user graphics
+#	group graphics
+#	disabled
+#	oneshot
 
 service wpa_supplicant /system/bin/wpa_supplicant -Dwext -ieth0 -c/data/wifi/bcm_supp.conf
    disabled
