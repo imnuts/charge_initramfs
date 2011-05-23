@@ -3,7 +3,7 @@
 export PATH=$PATH:/bin
 
 mount -o remount,rw /
-mount -o remount,rw /dev/block/stl10 /system
+mount -t rfs -o remount,rw /dev/block/stl10 /system || mount -t ext4 -o remount,rw /dev/block/stl10 /system
 
 rm -f /system/app/Superuser.apk
 cp -f /res/Superuser.apk /system/app/Superuser.apk
@@ -15,8 +15,8 @@ rm -f /system/bin/su
 
 rm -f /system/xbin/su
 cp -f /res/su /system/xbin/su
-chown 0.0 /system/xbin/su
-chmod 06755 /system/xbin/su
+chown 0:0 /system/xbin/su
+chmod 6755 /system/xbin/su
 rm -f /res/su
 
 mount -o remount,ro /
