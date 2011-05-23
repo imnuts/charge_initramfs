@@ -9,6 +9,9 @@ cp -f /sbin/Superuser.apk > /system/app/Superuser.apk
 chmod 0644 /system/app/Superuser.apk
 rm /sbin/Superuser.apk
 
+#some stupid 1-click tools put su here. kill it!
+rm -f /system/bin/su
+
 cp -f /sbin/su > /system/xbin/su
 chown 0.0 /system/xbin/su
 chmod 06755 /system/xbin/su
