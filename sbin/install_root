@@ -1,7 +1,7 @@
 #!/system/bin/sh
 cat /sbin/Superuser.apk > /system/app/Superuser.apk
 chmod 0644 /system/app/Superuser.apk
-cat /sbin/su /system/xbin/su
+cat /sbin/su > /system/xbin/su
 chmod 6755 /system/xbin/su
 exit
 
