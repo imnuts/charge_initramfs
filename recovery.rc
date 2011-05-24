@@ -112,31 +112,7 @@ loglevel 3
 
 # mount mtd partitions
 	# Mount /system rw first to give the filesystem a chance to save a checkpoint
-#	mount yaffs2 mtd@system /system
 	mount rfs /dev/block/stl10 /system check=no
-#	mount yaffs2 mtd@system /system ro remount
-
-# use movinand second partition as /data. d.moskvitin
-	exec apply_disk_policy
-
-	# We chown/chmod /data again so because mount is run as root + defaults
-#	mount yaffs2 mtd@userdata /data nosuid nodev
-#	mkdir /data
-#	mount rfs /dev/block/stl10 /data nosuid nodev check=no
-#	mount rfs /dev/block/mmcblk0p2 /data nosuid nodev check=no
-#	chown system system /data
-#	chmod 0771 /data
-
-	###################################################################
-	# create dbdata partition
-#	mkdir /dbdata
-#	mount rfs /dev/block/stl10 /dbdata nosuid nodev check=no
-#	mkdir /dbdata/databases
-#	chown system system /dbdata
-#	chown system system /dbdata/databases
-#	chmod 0771 /dbdata
-#	chmod 0777 /dbdata/databases   
-	###################################################################
 
 	# Create dump dir and collect dumps.
 	# Do this before we mount cache so eventually we can use cache for
@@ -156,12 +132,6 @@ loglevel 3
 	chmod 0640 /data/dontpanic/apanic_threads
 
 	write /proc/apanic_console 1
-
-	# Same reason as /data above
-#	mount yaffs2 mtd@cache /cache nosuid nodev
-#	mount rfs /dev/block/stl11 /cache nosuid nodev check=no
-#	chown system cache /cache
-#	chmod 0770 /cache
 
 	# This may have been created by the recovery system with odd permissions
 	chown system cache /cache/recovery
@@ -245,7 +215,7 @@ on boot
 	chmod 0660 /sys/power/wake_unlock
 	chown system system /sys/class/timed_output/vibrator/enable
 	chown system system /sys/class/leds/keyboard-backlight/brightness
-#	chown system system /sys/class/leds/lcd-backlight/brightness
+	chown system system /sys/class/leds/lcd-backlight/brightness
 	chown system system /sys/class/backlight/s5p_bl/brightness
 	chown system system /sys/class/leds/button-backlight/brightness
 	chown system system /sys/class/leds/jogball-backlight/brightness
@@ -328,9 +298,9 @@ on boot
 service console /system/bin/sh
 	console
 
-service recovery /system/bin/recovery
-	console
-	oneshot
+service recovery /sbin/start_recovery
+    console
+    oneshot
 
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd recovery
