@@ -56,9 +56,6 @@ loglevel 3
 # WTL BPLIB FOTA dpram
 	insmod /lib/modules/wtlfota_dpram.ko
 
-# Backwards Compat - XXX: Going away in G*
-	symlink /mnt/sdcard /sdcard
-
 	mkdir /system
 	mkdir /data 0771 system system
 	mkdir /efs 0771 system system
@@ -127,10 +124,6 @@ loglevel 3
 	chown root log /data/dontpanic/apanic_console
 	chmod 0640 /data/dontpanic/apanic_console
 
-	copy /proc/apanic_threads /data/dontpanic/apanic_threads
-	chown root log /data/dontpanic/apanic_threads
-	chmod 0640 /data/dontpanic/apanic_threads
-
 	write /proc/apanic_console 1
 
 	# This may have been created by the recovery system with odd permissions
@@ -139,7 +132,6 @@ loglevel 3
 
 	mount rfs /dev/block/stl3 /efs nosuid nodev check=no
 
-#	chown system system /efs
 	chown radio radio /efs
 	chmod 0771 /efs
 
