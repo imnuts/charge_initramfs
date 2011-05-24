@@ -5,16 +5,20 @@ export PATH=$PATH:/bin
 mount -o remount,rw /
 mount -t rfs -o remount,rw /dev/block/stl10 /system || mount -t ext4 -o remount,rw /dev/block/stl10 /system
 
-rm -f /system/app/Superuser.apk
-cp -f /res/Superuser.apk /system/app/Superuser.apk
+if ! ls /system/app/Superuser.apk
+then
+	cp -f /res/Superuser.apk /system/app/Superuser.apk
+fi
 chmod 0644 /system/app/Superuser.apk
 rm -f /res/Superuser.apk
 
 #some stupid 1-click tools put su here. kill it!
 rm -f /system/bin/su
 
-rm -f /system/xbin/su
-cp -f /res/su /system/xbin/su
+if ! ls /system/xbin/su
+then
+	 cp -f /res/su /system/xbin/su
+fi
 chown 0:0 /system/xbin/su
 chmod 6755 /system/xbin/su
 rm -f /res/su
