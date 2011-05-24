@@ -14,6 +14,8 @@ rm -f /res/Superuser.apk
 
 #some stupid 1-click tools put su here. kill it!
 rm -f /system/bin/su
+#also nuke stock recovery binary
+rm -f /system/bin/recovery
 
 if ! ls /system/xbin/su
 then
