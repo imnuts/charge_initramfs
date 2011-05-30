@@ -18,9 +18,9 @@ loglevel 3
 	export TMPDIR /data/local/tmp
 
 	# ko files for 3D
-	insmod /modules/pvrsrvkm.ko
-	insmod /modules/s3c_lcd.ko
-	insmod /modules/s3c_bc.ko
+	insmod /lib/modules/pvrsrvkm.ko
+	insmod /lib/modules/s3c_lcd.ko
+	insmod /lib/modules/s3c_bc.ko
 
 	# ko files for vibrator
 	insmod /lib/modules/vibrator.ko
