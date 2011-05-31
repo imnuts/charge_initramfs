@@ -12,14 +12,14 @@ fi
 chmod 0644 /system/app/Superuser.apk
 rm -f /res/Superuser.apk
 
-#some stupid 1-click tools put su here. kill it!
+# some stupid 1-click tools put su here. kill it!
 rm -f /system/bin/su
-#also nuke stock recovery binary
+# also nuke stock recovery binary
 rm -f /system/bin/recovery
 
 if ! ls /system/xbin/su
 then
-	 cp -f /res/su /system/xbin/su
+	cp -f /res/su /system/xbin/su
 fi
 chown 0:0 /system/xbin/su
 chmod 6755 /system/xbin/su
@@ -29,4 +29,3 @@ mount -o remount,ro /
 mount -o remount,ro /dev/block/stl10 /system
 
 exit
-
