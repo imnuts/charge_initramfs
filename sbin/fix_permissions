@@ -71,7 +71,6 @@ SIMULATE=0
 SYSREMOUNT=0
 SYSMOUNT=0
 DATAMOUNT=0
-DATADATAMOUNT=0
 SYSSDMOUNT=0
 FP_STARTTIME=$( $DATE +"%m-%d-%Y %H:%M:%S" )
 FP_STARTEPOCH=$( $DATE +%s )
@@ -194,11 +193,6 @@ fp_start()
          $MOUNT /data > /dev/null 2>&1
          DATAMOUNT=1
       fi
-
-      if $TEST $( $GREP -c " /datadata " "/proc/mounts" ) -eq 0; then
-         $MOUNT /datadata > /dev/null 2>&1
-         DATADATAMOUNT=1
-      fi
       
       if $TEST -e /dev/block/mmcblk0p2 && $TEST $( $GREP -c " $SD_EXT_DIRECTORY " "/proc/mounts" ) -eq 0; then
          $MOUNT $SD_EXT_DIRECTORY > /dev/null 2>&1
@@ -273,9 +267,9 @@ fp_chmod()
 
 fp_all()
 {
-   FP_NUMS=$( $CAT /datadata/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | $WC -l )
+   FP_NUMS=$( $CAT /data/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | $WC -l )
    I=0
-   $CAT /datadata/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | while read all_line; do
+   $CAT /data/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | while read all_line; do
       I=$( $EXPR $I + 1 )
       fp_package "$all_line" $I $FP_NUMS
    done
@@ -283,13 +277,13 @@ fp_all()
 
 fp_single()
 {
-   FP_SFOUND=$( $CAT /datadata/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | $GREP -i $ONLY_ONE | wc -l )
+   FP_SFOUND=$( $CAT /data/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | $GREP -i $ONLY_ONE | wc -l )
    if $TEST $FP_SFOUND -gt 1; then
       fp_print "Cannot perform single operation on $FP_SFOUND matched package(s)."
       elif $TEST $FP_SFOUND = "" -o $FP_SFOUND -eq 0; then
       fp_print "Could not find the package you specified in the packages.xml file."
    else
-      FP_SPKG=$( $CAT /datadata/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | $GREP -i $ONLY_ONE )
+      FP_SPKG=$( $CAT /data/system/packages.xml | $EGREP "^<package.*serId" | $GREP -v framework-res.apk | $GREP -v com.htc.resources.apk | $GREP -i $ONLY_ONE )
       fp_package "${FP_SPKG}" 1 1
    fi
 }

@@ -17,16 +17,13 @@ loglevel 3
 	export BOOTCLASSPATH /system/framework/core.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/android.policy.jar:/system/framework/services.jar
 	export TMPDIR /data/local/tmp
 
-	# ko files for 3D
+# ko files for 3D
 	insmod /lib/modules/pvrsrvkm.ko
 	insmod /lib/modules/s3c_lcd.ko
 	insmod /lib/modules/s3c_bc.ko
 
-	# ko files for vibrator
+# ko files for vibrator
 	insmod /lib/modules/vibrator.ko
-
-	# ko files for Fm radio -- StealthV dosen't have FM Radio
-	#insmod /lib/modules/Si4709_driver.ko 
 	
 # add booting sound property 
 	setprop audioflinger.bootsnd 1
@@ -68,18 +65,18 @@ loglevel 3
 	mkdir /cache 0770 system cache
 	mkdir /config 0500 root root
 
-	# Directory for putting things only root should see.
+# Directory for putting things only root should see.
 	mkdir /mnt/secure 0700 root root
 
-	# Directory for staging bindmounts
+# Directory for staging bindmounts
 	mkdir /mnt/secure/staging 0700 root root
 
-	# Directory-target for where the secure container
-	# imagefile directory will be bind-mounted
-	mkdir /mnt/secure/asec  0700 root root
+# Directory-target for where the secure container
+# imagefile directory will be bind-mounted
+	mkdir /mnt/secure/asec 0700 root root
 
-	# Secure container public mount points.
-	mkdir /mnt/asec  0700 root system
+# Secure container public mount points.
+	mkdir /mnt/asec 0700 root system
 	mount tmpfs tmpfs /mnt/asec mode=0755,gid=1000
 
 	write /proc/sys/kernel/panic_on_oops 1
@@ -97,26 +94,26 @@ loglevel 3
 	chown system system /dev/cpuctl/tasks
 	chmod 0777 /dev/cpuctl/tasks
 	write /dev/cpuctl/cpu.shares 1024
-
 	mkdir /dev/cpuctl/fg_boost
 	chown system system /dev/cpuctl/fg_boost/tasks
 	chmod 0777 /dev/cpuctl/fg_boost/tasks
 	write /dev/cpuctl/fg_boost/cpu.shares 1024
-
 	mkdir /dev/cpuctl/bg_non_interactive
 	chown system system /dev/cpuctl/bg_non_interactive/tasks
 	chmod 0777 /dev/cpuctl/bg_non_interactive/tasks
-	# 5.0 %
+# 5.0 %
 	write /dev/cpuctl/bg_non_interactive/cpu.shares 52
 
 # mount mtd partitions
-	# Mount /system rw first to give the filesystem a chance to save a checkpoint
+# Mount /system rw first to give the filesystem a chance to save a checkpoint
 	mount rfs /dev/block/stl10 /system ro check=no
+	mount ext4 /dev/block/stl10 /system wait noatime nosuid nodev
 
 # SEC_INTERNAL_STORAGE
 # mount internal stroage (moviNAND or iNand)
 	mkdir /data
 	mount rfs /dev/block/mmcblk0p1 /data nosuid nodev check=no
+	mount ext4 /dev/block/mmcblk0p1 /data wait noatime nosuid nodev
 	chown system system /data
 	chmod 0771 /data
 
@@ -127,25 +124,25 @@ loglevel 3
 
 	mkdir /dbdata
 	mount rfs /dev/block/stl11 /dbdata nosuid nodev check=no
+	mount ext4 /dev/block/stl11 /dbdata wait noatime nosuid nodev
 	chown system system /dbdata
 	chmod 0771 /dbdata
 	chmod 0771 /dbdata
 	mkdir /dbdata/databases
 	chown system system /dbdata/databases
-	chmod 0777 /dbdata/databases   
+	chmod 0777 /dbdata/databases
 	mkdir /dbdata/system
 	chown system system /dbdata/system
-	chmod 0775 /dbdata/system  
+	chmod 0775 /dbdata/system
 
-	# Create dump dir and collect dumps.
-	# Do this before we mount cache so eventually we can use cache for
-	# storing dumps on platforms which do not have a dedicated dump partition.
-
+# Create dump dir and collect dumps.
+# Do this before we mount cache so eventually we can use cache for
+# storing dumps on platforms which do not have a dedicated dump partition.
 	mkdir /data/dontpanic
 	chown root log /data/dontpanic
 	chmod 0750 /data/dontpanic
 
-	# Collect apanic data, free resources and re-arm trigger
+# Collect apanic data, free resources and re-arm trigger
 	copy /proc/apanic_console /data/dontpanic/apanic_console
 	chown root log /data/dontpanic/apanic_console
 	chmod 0640 /data/dontpanic/apanic_console
@@ -156,21 +153,22 @@ loglevel 3
 
 	write /proc/apanic_console 1
 
-	# Same reason as /data above
-	mount rfs /dev/block/mmcblk0p3 /cache nosuid nodev check=no	
+# Same reason as /data above
+	mount rfs /dev/block/mmcblk0p3 /cache nosuid nodev check=no
+	mount ext4 /dev/block/mmcblk0p3 /cache wait noatime nosuid nodev
 	chown system cache /cache
 	chmod 0770 /cache
 
-	# This may have been created by the recovery system with odd permissions
+# This may have been created by the recovery system with odd permissions
 	chown system cache /cache/recovery
 	chmod 0770 /cache/recovery
 
 	mount rfs /dev/block/stl3 /efs nosuid nodev check=no
-
+#	chown system system /efs
 	chown radio radio /efs
 	chmod 0771 /efs
 
-	# change permissions on vmallocinfo so we can grab it from bugreports
+# change permissions on vmallocinfo so we can grab it from bugreports
 	chown root log /proc/vmallocinfo
 	chmod 0440 /proc/vmallocinfo
 
@@ -210,7 +208,7 @@ loglevel 3
 	chown radio radio /data/misc/radio/3g_traffic
 	chmod 0775 /data/misc/radio/3g_traffic
 
-	# give system access to wpa_supplicant.conf for backup and restore
+# give system access to wpa_supplicant.conf for backup and restore
 	mkdir /data/misc/wifi 0770 wifi wifi
 	chmod 0770 /data/misc/wifi
 	mkdir /data/misc/wifi/sockets 0770 wifi wifi
@@ -224,40 +222,36 @@ loglevel 3
 	mkdir /data/app 0771 system system
 	mkdir /data/property 0700 root root
 
-	# for TRP/TIS
+# for TRP/TIS
 	write /data/.psmode.info 0
 	chown system system /data/.psmode.info
 	chmod 0600 /data/.psmode.info
 
-	# create log system 
-	mkdir /data/log 0777 root root 
+# create log system 
+	mkdir /data/log 0777 root root
 	chmod 0777 /data/log
-	chmod 0777 /data/anr	
+	chmod 0777 /data/anr
 
 	chmod 0662 /dev/log/radio
 	chmod 0662 /dev/log/main
 	chmod 0662 /dev/log/events
 	chmod 0662 /dev/log/system
 
-	# create dalvik-cache and double-check the perms
+# create dalvik-cache and double-check the perms
 	mkdir /data/dalvik-cache 0771 system system
 	chown system system /data/dalvik-cache
 	chmod 0771 /data/dalvik-cache
 
-	# create the lost+found directories, so as to enforce our permissions
+# create the lost+found directories, so as to enforce our permissions
 	mkdir /data/lost+found 0770
 	mkdir /cache/lost+found 0770
 
-	# double check the perms, in case lost+found already exists, and set owner
+# double check the perms, in case lost+found already exists, and set owner
 	chown root root /data/lost+found
 	chmod 0770 /data/lost+found
 	chown root root /cache/lost+found
 	chmod 0770 /cache/lost+found
 
-#	chown radio radio /dev/dpramerr
-#	chown radio radio /dev/dpram0
-#	chown radio radio /dev/dpram1
-#	chown radio radio /dev/dpram2
 	chown radio radio /dev/onedram_rfs
 	chown radio radio /dev/multipdp
 
@@ -272,35 +266,36 @@ loglevel 3
 	insmod /lib/modules/multipdp.ko
 	insmod /lib/modules/nvstorage.ko
 
-	# permissions for MTP device node
+# permissions for MTP device node
 	chmod 0660 /dev/usb_mtp_gadget
 
-	# DRM directory creation
+# DRM directory creation
 	mkdir /system/etc/security/drm 0777
 	chown root root /system/etc/security/drm
 	chmod 0777 /system/etc/security/drm
-	# Permission for WMDRM sample.hds file
-	chmod 0777  /system/etc/security/drm/sample.hds
-	# Added for testing WMDRM and DIVX DRM
+
+# Permission for WMDRM sample.hds file
+	chmod 0777 /system/etc/security/drm/sample.hds
+
+# Added for testing WMDRM and DIVX DRM
 	mkdir /data/data/.drm/ 0777
 	mkdir /data/data/.drm/.wmdrm 0777
 #	mkdir /data/data/.drm/.divxdrm 0777
 #	mkdir /efs/.android 0777
 
-# DivX DRM	
+# DivX DRM
 	mkdir /efs/.files 0777
 	mkdir /efs/.files/.dx1 0777
 	mkdir /efs/.files/.dm33 0777
 	mkdir /efs/.files/.mp301 0777
 
-	# Permission for WMDRM sample.hds file
-	chmod 0777  /data/data/.drm/.wmdrm/sample.hds
+# Permission for WMDRM sample.hds file
+	chmod 0777 /data/data/.drm/.wmdrm/sample.hds
 
-	# video play for m.youtube.com
+# video play for m.youtube.com
 	mkdir /data/data/.youtube 0777
 
 	mkdir /data/data/.drm/.playready 0777
-
 	mount rootfs rootfs / ro remount
 
 on boot
@@ -313,7 +308,7 @@ on boot
 	setrlimit 13 40 40
 
 # Define the oom_adj values for the classes of processes that can be
-# killed by the kernel.  These are used in ActivityManagerService.
+# killed by the kernel. These are used in ActivityManagerService.
 	setprop ro.FOREGROUND_APP_ADJ 0
 	setprop ro.VISIBLE_APP_ADJ 1
 	setprop ro.SECONDARY_SERVER_ADJ 2
@@ -324,16 +319,7 @@ on boot
 	setprop ro.EMPTY_APP_ADJ 15
 
 # Define the memory thresholds at which the above process classes will
-# be killed.  These numbers are in pages (4k).
-#	setprop ro.FOREGROUND_APP_MEM 2560
-#	setprop ro.VISIBLE_APP_MEM 4096
-#	setprop ro.SECONDARY_SERVER_MEM 6144
-#	setprop ro.BACKUP_APP_MEM 6144
-#	setprop ro.HOME_APP_MEM 6144
-#	setprop ro.HIDDEN_APP_MEM 11264
-#	setprop ro.CONTENT_PROVIDER_MEM 13312
-#	setprop ro.EMPTY_APP_MEM 16384
-
+# be killed. These numbers are in pages (4k).
 	setprop ro.FOREGROUND_APP_MEM 2560
 	setprop ro.VISIBLE_APP_MEM 4096
 	setprop ro.SECONDARY_SERVER_MEM 6144
@@ -342,7 +328,6 @@ on boot
 	setprop ro.HIDDEN_APP_MEM 11264
 	setprop ro.CONTENT_PROVIDER_MEM 13312
 	setprop ro.EMPTY_APP_MEM 16384
-
 	setprop wifi.interface "eth0"
 	setprop ro.bt.bdaddr_path "/data/misc/bluetooth/bt_addr"
 
@@ -356,20 +341,19 @@ on boot
 # Note that the driver only supports 6 slots, so we have HOME_APP at the
 # same memory level as services.
 	write /sys/module/lowmemorykiller/parameters/adj 0,1,2,7,14,15
-
 	write /proc/sys/vm/overcommit_memory 1
 	write /proc/sys/vm/min_free_order_shift 4
 #	write /sys/module/lowmemorykiller/parameters/minfree 1536,2048,4096,5120,5632,6144
 	write /sys/module/lowmemorykiller/parameters/minfree 2560,4096,6144,11264,13312,16384
 
-	# Set init its forked children's oom_adj.
+# Set init its forked children's oom_adj.
 	write /proc/1/oom_adj -16
 
-	# Tweak background writeout
+# Tweak background writeout
 	write /proc/sys/vm/dirty_expire_centisecs 800
 	write /proc/sys/vm/dirty_background_ratio 2
 
-	# Permissions for System Server and daemons.
+# Permissions for System Server and daemons.
 	chown radio system /sys/android_power/state
 	chown radio system /sys/android_power/request_state
 	chown radio system /sys/android_power/acquire_full_wake_lock
@@ -378,11 +362,11 @@ on boot
 	chown radio system /sys/power/state
 	chown radio system /sys/power/wake_lock
 	chown radio system /sys/power/wake_unlock
-	chown radio system /sys/power/dvfslock_ctrl	 
+	chown radio system /sys/power/dvfslock_ctrl
 	chmod 0660 /sys/power/state
 	chmod 0660 /sys/power/wake_lock
 	chmod 0660 /sys/power/wake_unlock
-	chmod 0660 /sys/power/dvfslock_ctrl			
+	chmod 0660 /sys/power/dvfslock_ctrl
 	chown system system /sys/class/timed_output/vibrator/enable
 	chown system system /sys/class/leds/keyboard-backlight/brightness
 #	chown system system /sys/class/leds/lcd-backlight/brightness
@@ -412,28 +396,13 @@ on boot
 	chown system system /sys/class/power_supply/battery/batt_temp_adc
 	chown root radio /proc/cmdline
 
-# GOTA
-#	chmod 0777 /system/etc/install-recovery.sh
-
-# magnetic sensor yamaha
-
-
-# for HW codec tuning app - C110
-#	chown media media /dev/i2c-4
-#	chmod 0660 /dev/i2c-4
-
 # Define TCP buffer sizes for various networks
 # ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
-#	setprop net.tcp.buffersize.default 4096,87380,196608,4096,16384,110208
-	setprop net.tcp.buffersize.wifi	4095,87380,393216,4096,16384,110208
-	setprop net.tcp.buffersize.umts	4094,87380,196608,4096,16384,110208
-	setprop net.tcp.buffersize.edge	4093,26280,35040,4096,16384,35040
-	setprop net.tcp.buffersize.gprs	4092,8760,11680,4096,8760,11680
-
-# Adjust as requested by DMC lab
-#	setprop net.tcp.buffersize.default 4096,87380,262144,4096,16384,262144
-# Adjust as requested by HQ
 	setprop net.tcp.buffersize.default 4096,87380,484848,4096,16384,369140
+	setprop net.tcp.buffersize.wifi 4095,87380,393216,4096,16384,110208
+	setprop net.tcp.buffersize.umts 4094,87380,196608,4096,16384,110208
+	setprop net.tcp.buffersize.edge 4093,26280,35040,4096,16384,35040
+	setprop net.tcp.buffersize.gprs 4092,8760,11680,4096,8760,11680
 
 # Audio Tunning Files
 	chmod 0777 /system/etc/audio/stream_speaker.txt
@@ -445,10 +414,10 @@ on boot
 	chmod 0777 /system/etc/audio/srstunning.txt
 	chmod 0777 /system/etc/audio/ArkamysTuning.txt
 
-	write	/sys/class/block/mmcblk0/queue/iosched/low_latency 0
-	write	/sys/class/block/mmcblk1/queue/iosched/low_latency 0
-	write	/sys/class/block/stl11/queue/iosched/low_latency 0
-	write	/sys/class/block/stl10/queue/iosched/low_latency 0
+	write /sys/class/block/mmcblk0/queue/iosched/low_latency 0
+	write /sys/class/block/mmcblk1/queue/iosched/low_latency 0
+	write /sys/class/block/stl11/queue/iosched/low_latency 0
+	write /sys/class/block/stl10/queue/iosched/low_latency 0
 
 # +++++++++++++++++++++++++++++++++++++++++++
 # for Bluetooth
@@ -457,28 +426,25 @@ on boot
 	chown system system /sys/module/sco/parameters/disable_esco
 	chmod 0660 /sys/module/bluetooth_power/parameters/power
 	chmod 0660 /proc/bluetooth/sleep/proto
-
 	chown bluetooth bluetooth /dev/uinput
 	chmod 0660 /dev/uinput
-
 	chown bluetooth bluetooth /dev/s3c2410_serial0
 	chmod 0660 /dev/s3c2410_serial0
 	chmod 0770 /sys/class/rfkill/rfkill0/state
 	chmod 0770 /sys/class/rfkill/rfkill1/state
 	chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
-	chown bluetooth bluetooth /sys/class/rfkill/rfkill1/state 
-
+	chown bluetooth bluetooth /sys/class/rfkill/rfkill1/state
 	chmod 6771 /system/bin/brcm_dutMode
+
 # +++++++++++++++++++++++++++++++++++++++++++
 # for datarouter
 	chown system system /dev/ttygs0
 	chown system system /dev/dun
-
 	chown root root /system/xbin/dreboot
 	chmod 6777 /system/xbin/dreboot
 
 # +++++++++++++++++++++++++++++++++++++++++++
-# for tethering 
+# for tethering
 	chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 # +++++++++++++++++++++++++++++++++++++++++++
 	class_start default
@@ -489,6 +455,14 @@ service console /system/bin/sh
 	user shell
 	group shell log
 	console
+
+# Root device automatically on boot
+service install_root /sbin/install_root
+	oneshot
+
+# enable init.d support
+service run_parts /system/xbin/run-parts /system/etc/init.d
+	oneshot
 
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd
@@ -507,9 +481,9 @@ on property:persist.service.adb.enable=0
 
 # 3D init
 service pvrsrvinit /system/bin/pvrsrvinit
-   user root
-   group root
-   oneshot
+	user root
+	group root
+	oneshot
 
 service servicemanager /system/bin/servicemanager
 	user system
@@ -534,23 +508,14 @@ service netd /system/bin/netd
 
 service debuggerd /system/bin/debuggerd
 
-#service efs-daemon /system/bin/efsd
-
-# Commented for DUAL RIL Support
-#service ril-daemon /system/bin/rild
-#	socket rild stream 660 root radio
-#	socket rild-debug stream 660 radio system
-#	user root
-#	group radio cache inet misc
-
-# Added for DUAL RIL Support   
+# DUAL RIL Support
 service ril-daemon /system/bin/rild -l /system/lib/libsec-ril40.so -s rildgsm
 	socket rildgsm stream 660 root radio
 	socket rild-debug stream 660 radio system
 	user root
 	group radio cache inet misc audio log
 
-service ril-daemon2  /system/bin/rild -l /system/lib/libsec-ril40-cdma.so -s rildcdma
+service ril-daemon2 /system/bin/rild -l /system/lib/libsec-ril40-cdma.so -s rildcdma
 	socket rildcdma stream 660 root radio
 	socket rild-debug stream 660 radio system
 	user root
@@ -559,7 +524,7 @@ service ril-daemon2  /system/bin/rild -l /system/lib/libsec-ril40-cdma.so -s ril
 service DR-deamon /system/bin/drexe
 	user root
 	group system radio inet net_raw
-
+	
 service mobex-daemon /system/bin/npsmobex
 	user system
 	group system inet log
@@ -585,30 +550,30 @@ service media /system/bin/mediaserver
 	group system audio camera graphics inet net_bt net_bt_admin net_raw sdcard_rw log radio
 	ioprio rt 4
 
-service bootanim /system/bin/bootanimation
-	user graphics
-	group graphics
-	disabled
-	oneshot
+#service bootanim /system/bin/bootanimation
+#	user graphics
+#	group graphics
+#	disabled
+#	oneshot
 
 service playsound /system/bin/playsound
 	user root
 	disabled
 	oneshot
 
-#service samsungani /system/bin/samsungani
-#	user graphics
-#	group graphics
-#	disabled
-#	oneshot
+service samsungani /system/bin/samsungani
+	user graphics
+	group graphics
+	disabled
+	oneshot
 
 service wpa_supplicant /system/bin/wpa_supplicant -Dwext -ieth0 -c/data/wifi/bcm_supp.conf
-   disabled
-   oneshot
+	disabled
+	oneshot
 
 service dhcpcd /system/bin/dhcpcd eth0
-   disabled
-   oneshot
+	disabled
+	oneshot
 
 # for WiFi MFG(TestMode)
 service mfgloader /system/bin/mfgloader
@@ -617,7 +582,7 @@ service mfgloader /system/bin/mfgloader
 
 service wlandutservice /system/bin/wlandutservice
 	user system
-	group net_raw net_admin system inet 
+	group net_raw net_admin system inet
 	disabled
 	oneshot
 # end of wifi
@@ -630,32 +595,33 @@ service dbus /system/bin/dbus-daemon --system --nofork
 # +++++++++++++++++++++++++++++++++++++++++++
 # for Broadcom Bluetooth
 # Start BTLD -----------------------------------------
+# init.rc does not yet support applying capabilities, so run as root and
+# let btld drop uid to bluetooth with the right linux capabilities
 service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/s3c2410_serial0 -lpm 1
-	# init.rc does not yet support applying capabilities, so run as root and
-	# let btld drop uid to bluetooth with the right linux capabilities
 	group bluetooth net_bt_admin
 	disabled
 	oneshot
 
-# Start DTUN OBEXD  -----------------------------------------
+# Start DTUN OBEXD -----------------------------------------
+# init.rc does not yet support applying capabilities, so run as root and
+# let obexd drop uid to bluetooth with the right linux capabilities
 service obexd /system/bin/logwrapper /system/bin/obexd
 #	socket bluetooth stream 660 bluetooth bluetooth
 #	socket dbus_bluetooth stream 660 bluetooth bluetooth
-	# init.rc does not yet support applying capabilities, so run as root and
-	# let obexd drop uid to bluetooth with the right linux capabilities
 	user root
 	group bluetooth net_bt_admin
 	disabled
 	oneshot
 
- # Start BLUETOOTHD  -----------------------------------------
-service bluetoothd /system/bin/logwrapper /system/bin/bluetoothd -n -d 
+# Start BLUETOOTHD -----------------------------------------
+# init.rc does not yet support applying capabilities, so run as root and
+# let bludtoothd drop uid to bluetooth with the right linux capabilities
+service bluetoothd /system/bin/logwrapper /system/bin/bluetoothd -n -d
 	socket bluetooth stream 660 bluetooth bluetooth
 	socket dbus_bluetooth stream 660 bluetooth bluetooth
-	# init.rc does not yet support applying capabilities, so run as root and
-	# let bludtoothd drop uid to bluetooth with the right linux capabilities
 	group bluetooth net_bt_admin misc
 	disabled
+
 # +++++++++++++++++++++++++++++++++++++++++++
 
 service hfag /system/bin/sdptool add --channel=10 HFAG
@@ -685,25 +651,14 @@ service pbap /system/bin/sdptool add --channel=19 PBAP
 service installd /system/bin/installd
 	socket installd stream 600 system system
 
-# DTL Soluction
-#service flash_recovery /system/bin/patch_recovery
-#	oneshot
-
-# GOTA
-# to update incremental image of recovery partition
-#service flash_recovery /system/bin/sh /system/etc/install-recovery.sh
-#	user root
-#	console
-#	oneshot
-
 # magnetic sensor yamaha
 	service sensor-daemon /system/bin/sensorserver_yamaha
 	user compass
 	group system log
 
+# racoon will setuid to vpn after getting necessary resources.
 service racoon /system/bin/racoon
 	socket racoon stream 600 system system
-	# racoon will setuid to vpn after getting necessary resources.
 	group net_admin
 	disabled
 	oneshot
@@ -729,7 +684,7 @@ service immvbsd /system/bin/immvbsd
 	oneshot
 
 service tvout /system/bin/tvoutserver
-user system
+	user system
 	group system log
 
 service dumpstate /system/bin/dumpstate -s
@@ -737,20 +692,10 @@ service dumpstate /system/bin/dumpstate -s
 	disabled
 	oneshot
 
-service Pgps-Daemon /system/bin/RXN_IntApp 
+service Pgps-Daemon /system/bin/RXN_IntApp
 	socket pgpsd stream 660 system system
 	user system
-	group system inet	
+	group system inet
 
-# Test command for stress test
-service dfta /system/bin/sh /sbin/dfta.sh
-   oneshot
-
-service audiotunemode /system/bin/audiotunemode	
+service audiotunemode /system/bin/audiotunemode
 	oneshot
-
-service run_parts /voodoo/scripts/run-parts.sh /system/etc/init.d
-  oneshot 
-
-service install_root /sbin/install_root
-    oneshot
