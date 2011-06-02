@@ -298,6 +298,10 @@ loglevel 3
 	mkdir /data/data/.drm/.playready 0777
 	mount rootfs rootfs / ro remount
 
+# tun.ko and cifs.ko modules
+	insmod /lib/modules/tun.ko
+	insmod /lib/modules/cifs.ko
+
 on boot
 # basic network init
 	ifup lo
