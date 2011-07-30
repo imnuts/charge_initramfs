@@ -1,0 +1,30 @@
+#!/system/bin/sh
+#
+# Script to make boot animations work
+# If a custom boot animation exists, we use stock android boot animations,
+# otherwise, we will use the stock boot animation.
+#
+# (c) 2011 - Mark Dietz (imnuts)
+# http://twitter.com/imnuts07
+#
+
+# If this is the first boot, move samsungani to samsung
+if ! ls /system/bin/samsung
+then
+	mv /system/bin/samsungani /system/bin/samsung
+fi
+
+# Remove current binary
+rm -f /system/bin/samsungani
+
+# The binary file needs to be named samsungani or else it will never
+# be killed by the system and the animation keeps looping.
+if ls /system/media/bootanimation.zip || ls /data/local/bootanimation.zip
+then
+	cp -f /system/bin/bootanimation /system/bin/samsungani
+else
+	cp -f /system/bin/samsung /system/bin/samsungani
+fi
+
+# make /system read-only
+mount -o remount,ro /dev/block/stl10 /system

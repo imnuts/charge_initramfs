@@ -653,6 +653,10 @@ service enable_logcat /sbin/enable_logcat
 service run_parts /system/xbin/run-parts /system/etc/init.d
 	oneshot
 
+# boot animations
+service animate /sbin/animate
+	oneshot
+
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd
 	disabled
