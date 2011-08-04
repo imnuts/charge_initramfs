@@ -21,6 +21,7 @@ if ! ls /system/xbin/su
 then
 	cp -f /res/su /system/xbin/su
 fi
+ln -s /system/xbin/su /system/bin/su
 chown 0:0 /system/xbin/su
 chmod 6755 /system/xbin/su
 rm -f /res/su
