@@ -139,10 +139,11 @@ on fs
 	chown system system /data
 	chmod 0771 /data
 
-	mkdir /preinstall
-	mount rfs /dev/block/mmcblk0p2 /preinstall nosuid nodev check=no
-	chown system system /preinstall
-	chmod 0771 /preinstall
+# /preinstall is now a swap partition
+#	mkdir /preinstall
+#	mount rfs /dev/block/mmcblk0p2 /preinstall nosuid nodev check=no
+#	chown system system /preinstall
+#	chmod 0771 /preinstall
 
 	mkdir /dbdata
 	mount rfs /dev/block/stl11 /dbdata noatime nosuid nodev check=no
@@ -632,6 +633,10 @@ on property:persist.service.usb.setting=3
 	write /sys/devices/platform/android_usb/UsbMenuSel 3
 on property:persist.service.usb.setting=4
 	write /sys/devices/platform/android_usb/UsbMenuSel 4
+
+# Swap partition
+service add_swap /sbin/add_swap
+	oneshot
 
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd

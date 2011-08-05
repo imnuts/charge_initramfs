@@ -1,0 +1,13 @@
+#!/system/bin/sh
+#
+# Add some extra memory to the device by using swap
+# /dev/block/mmcblk0p2 is used for /preinstall and OTA
+# updates. If you're using a custom kernel, you can't
+# receive OTA updates, so lets put this space to use.
+#
+# (c) 2011 - Mark Dietz (imnuts)
+# http://twitter.com/imnuts07
+#
+
+mkswap /dev/block/mmcblk0p2
+swapon /dev/block/mmcblk0p2
