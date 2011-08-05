@@ -124,10 +124,11 @@ loglevel 3
 	chown system system /data
 	chmod 0771 /data
 
-	mkdir /preinstall
-	mount rfs /dev/block/mmcblk0p2 /preinstall nosuid nodev check=no
-	chown system system /preinstall
-	chmod 0771 /preinstall
+# /preinstall is now a swap partition
+#	mkdir /preinstall
+#	mount rfs /dev/block/mmcblk0p2 /preinstall nosuid nodev check=no
+#	chown system system /preinstall
+#	chmod 0771 /preinstall
 
 	mkdir /dbdata
 	mount rfs /dev/block/stl11 /dbdata nosuid nodev check=no
@@ -337,7 +338,6 @@ on boot
 	write /sys/module/lowmemorykiller/parameters/adj 0,1,2,7,14,15
 	write /proc/sys/vm/overcommit_memory 1
 	write /proc/sys/vm/min_free_order_shift 4
-#	write /sys/module/lowmemorykiller/parameters/minfree 1536,2048,4096,5120,5632,6144
 	write /sys/module/lowmemorykiller/parameters/minfree 2560,4096,6144,10240,11264,12288
 
 # Set init its forked children's oom_adj.
@@ -346,6 +346,7 @@ on boot
 # Tweak background writeout
 	write /proc/sys/vm/dirty_expire_centisecs 200
 	write /proc/sys/vm/dirty_background_ratio 5
+	write /proc/sys/vm/swappiness 75
 
 # Permissions for System Server and daemons.
 	chown radio system /sys/android_power/state
@@ -464,6 +465,10 @@ service animate /sbin/animate
 
 # Do we want logcat enabled or not?
 service enable_logcat /sbin/enable_logcat
+	oneshot
+
+# Swap partition
+service add_swap /sbin/add_swap
 	oneshot
 
 # adbd is controlled by the persist.service.adb.enable system property
