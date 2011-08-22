@@ -160,5 +160,7 @@ ln -s busybox /sbin/zcat
 mv mount.wrapper mount
 chmod 755 mount
 
+umount -l /system
+
 # run the actual recovery
 /sbin/recovery &
