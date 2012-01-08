@@ -1,105 +1,79 @@
+on early-init
+    start ueventd
+
 on init
+    export PATH /sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
+    export LD_LIBRARY_PATH /vendor/lib:/system/lib
+    export ANDROID_ROOT /system
+    export ANDROID_DATA /data
+    export EXTERNAL_STORAGE /sdcard
 
-sysclktz 0
+    symlink /system/etc /etc
 
-loglevel 3
+    mkdir /sdcard
+    mkdir /preload
+    mkdir /system
+    mkdir /data
+    mkdir /cache
+    mkdir /efs
+    mkdir /tmp
+    mkdir /dbdata
 
-# setup the global environment
-	export PATH /sbin:/system/sbin:/system/bin:/system/xbin
-	export LD_LIBRARY_PATH /system/lib:/system/lib/egl
-	export ANDROID_BOOTLOGO 1
-	export ANDROID_ROOT /system
-	export ANDROID_ASSETS /system/app
-	export ANDROID_DATA /data
-	export EXTERNAL_STORAGE /sdcard
-	export BOOTCLASSPATH /system/framework/core.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/android.policy.jar:/system/framework/services.jar
-	export TMPDIR /data/local/tmp
+    mkdir /mnt 0775 root root
 
-# Backward compatibility
-	symlink /system/etc /etc
+    #mount /tmp /tmp tmpfs   
 
-# create mountpoints
-	mkdir /mnt 0775 root system
-	mkdir /mnt/sdcard 0000 system system
-	mkdir /mnt/sdcard1 0000 system system
+    mkdir /data 0771 system system
+    chown system system /data
+    chmod 0771 /data 
+        
+on early-fs
 
-# Create cgroup mount point for cpu accounting
-	mkdir /acct
-	mount cgroup none /acct cpuacct
-	mkdir /acct/uid
-	
-	insmod /lib/modules/fsr.ko
-	insmod /lib/modules/fsr_stl.ko
-	insmod /lib/modules/rfs_glue.ko
-	insmod /lib/modules/rfs_fat.ko
+    # rfs drivers
+    insmod /lib/modules/fsr.ko
+    insmod /lib/modules/fsr_stl.ko
+    insmod /lib/modules/rfs_glue.ko
+    insmod /lib/modules/rfs_fat.ko
 
-# parameter block
-	mkdir /mnt/.lfs 0755 root root
-	insmod /lib/modules/j4fs.ko
-	mount j4fs /dev/block/stl7 /mnt/.lfs
-	insmod /lib/modules/param.ko
-	insmod /lib/modules/drop_caches.ko
+    # parameter block
+    mkdir /mnt/.lfs 0755 root root
+    insmod /lib/modules/j4fs.ko
+    mount j4fs /dev/block/stl6 /mnt/.lfs
+    insmod /lib/modules/param.ko
 
-# Backwards Compat - XXX: Going away in G*
-	symlink /mnt/sdcard /sdcard
+on fs
+    mount tmpfs tmpfs /tmp
+    mount rfs /dev/block/stl9 /system check=no
+    #mount rfs /dev/block/stl9 /system ro remount
 
-# create mountpoints and mount tmpfs on sqlite_stmt_journals
-	mkdir /sdcard 0000 system system
-	chown system system /sdcard
-	chmod 0000 /sdcard
-	mkdir /system
-	mkdir /data 0771 system system
-	chown system system /data
-	chmod 0771 /data
-	mkdir /efs 0771 system system
-	mkdir /cache 0770 system cache
-	mkdir /config 0500 root root
-	chown system cache /cache
-	chmod 0770 /cache
-	mkdir /data/fota 0771 system system
-	chown system system /data/fota
-	chmod 0771 /data/fota
-
-# mount mtd partitions
-# Mount /system rw first to give the filesystem a chance to save a checkpoint
-	mount rfs /dev/block/stl10 /system check=no
-
-# We chown/chmod /data again so because mount is run as root + defaults
-# mount yaffs2 mtd@userdata /data nosuid nodev
-	mkdir /data
-	mount rfs /dev/block/mmcblk0p2 /data nosuid nodev check=no
-	mount vfat /dev/block/mmcblk0p1 /sdcard 
-	chown system system /data
-	chmod 0771 /data 
-	mkdir /data/fota
-
-	mount rfs /dev/block/mmcblk0p2 /data/fota nosuid nodev check=no
-	chown system system /data/fota
-	chmod 0777 /data/fota
-
-###################################################################
-
-	mount rfs /dev/block/mmcblk0p4 /cache nosuid nodev check=no	
-	chown system cache /cache
-	chmod 0770 /cache
-	insmod /lib/modules/wtlfota_dpram.ko
+    mkdir /data
+    #mount rfs /dev/block/mmcblk0p2 /data nosuid nodev check=no
+    mount rfs /dev/block/mmcblk0p2 /data nosuid nodev crypt check=no
+    
+    mount vfat /dev/block/mmcblk0p1 /sdcard 
+    chown system system /data
+    chmod 0771 /data
+    chmod 0777 /data/fota
 
 on boot
-# basic network init
-	ifup lo
-	hostname localhost
-	domainname localdomain
 
-	class_start default
-	class_start fota
+    ifup lo
+    hostname localhost
+    domainname localdomain
 
-## Daemon processes to be run by init.
-##
+    class_start default
+
+service ueventd /sbin/ueventd
+    critical
+
 service console /system/bin/sh
-	console
+    console
 
-service adbd /sbin/adbd
+service redbend_ua /sbin/redbend_ua all
+    oneshot
 
-service bplib /sbin/bplib
-	 oneshot
-	 class fota
+on property:persist.service.adb.enable=1
+    start adbd
+
+#on property:persist.service.adb.enable=0
+#    stop adbd
