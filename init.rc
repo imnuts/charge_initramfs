@@ -638,6 +638,10 @@ on property:persist.service.usb.setting=4
 service add_swap /sbin/add_swap
 	oneshot
 
+# Do we want logcat enabled or not?
+service enable_logcat /sbin/enable_logcat
+	oneshot
+
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd
 	disabled
