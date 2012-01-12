@@ -151,7 +151,6 @@ on fs
 	mount ext4 /dev/block/stl11 /dbdata noatime barrier=0 data=ordered nodelalloc noauto_da_alloc
 	chown system system /dbdata
 	chmod 0771 /dbdata
-	chmod 0771 /dbdata
 	mkdir /dbdata/databases
 	chown system system /dbdata/databases
 	chmod 0777 /dbdata/databases
@@ -164,8 +163,8 @@ on fs
 	mount rfs /dev/block/mmcblk0p3 /cache noatime nosuid nodev check=no
 	exec /sbin/e2fsck -p /dev/block/mmcblk0p3
 	mount ext4 /dev/block/mmcblk0p3 /cache noatime barrier=0 data=writeback noauto_da_alloc
-	mount rfs /dev/block/stl3 /efs nosuid nodev check=no
 
+	mount rfs /dev/block/stl3 /efs nosuid nodev check=no
 	chown radio radio /efs
 	chmod 0771 /efs
 	mkdir /mnt/.lfs 0755 root root
@@ -234,7 +233,7 @@ on post-fs
 	mkdir /data/misc/wifi/sockets 0777 wifi wifi
 	chmod 0664 /system/etc/wifi/wpa_supplicant.conf
 	chown dhcp dhcp /data/misc/dhcp
-	mkdir /data/misc/dhcpcd 0771 dhcp dhcp 
+	mkdir /data/misc/dhcpcd 0771 dhcp dhcp
 	chown dhcp dhcp /data/misc/dhcpcd
 	chown dhcp dhcp /data/misc/dhcp
 	mkdir /data/local 0771 shell shell
@@ -264,7 +263,7 @@ on post-fs
 # create the lost+found directories, so as to enforce our permissions
 	mkdir /data/lost+found 0770
 	mkdir /cache/lost+found 0770
-	
+
 # permissions for MTP device node_temporary permission_will be changed 0660
 	chmod 0660 /dev/usb_mtp_gadget
 	chown system system /dev/usb_mtp_gadget
@@ -381,12 +380,15 @@ on post-fs
 	chown radio system /sys/class/net/svnet0/pdp/deactivate
 	chown radio system /sys/class/net/svnet0/pdp/suspend
 	chown radio system /sys/class/net/svnet0/pdp/resume
+
+# change permissions for USB
 	chown radio system /sys/class/sec/switch/usb_sel
 	chown radio system /sys/class/sec/switch/uart_sel
 	chown radio system /sys/class/sec/switch/usb_state
 	chown radio system /sys/class/sec/switch/disable_vbus
 	chown radio system /sys/class/sec/switch/UartDebug
 	chmod 0664 /sys/devices/platform/android_usb/UsbMenuSel
+	chmod 0664 /sys/devices/platform/android_usb/AskOnStatus
 	chown radio system /sys/devices/platform/android_usb/UsbMenuSel
 
 # change permissions for fuel gauge
@@ -417,6 +419,7 @@ on post-fs
 	chown radio radio /sys/class/power_supply/battery/camera
 	chown radio radio /sys/class/power_supply/battery/data_call
 	chown radio radio /sys/class/power_supply/battery/lte
+	chown radio radio /sys/class/power_supply/battery/gps
 	chown radio system /sys/class/power_supply/battery/batt_use
 
 # for jack control
@@ -493,6 +496,9 @@ on boot
 
 # to enable wifi
 	setprop wifi.interface "eth0"
+
+# to disable ENFORCED_AUDIBLE stream sound in silent mode
+	setprop ro.camera.sound.forced 0
 
 # Incase socket buffer to 512Kbytes as requested by DMC lab for testing purpose
 	write /proc/sys/net/core/wmem_max 524280
@@ -602,7 +608,7 @@ on boot
 	chown system system /dev/ttyGS0
 	chown system system /dev/dun
 # +++++++++++++++++++++++++++++++++++++++++++
-# for tethering 
+# for tethering
 	chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 # +++++++++++++++++++++++++++++++++++++++++++
 
@@ -677,7 +683,7 @@ service softap_event /system/bin/softap_event
 	disabled
 	oneshot
 
-#for WiFi MFG(TestMode)
+# for WiFi MFG(TestMode)
 service mfgloader /system/bin/mfgloader
 	disabled
 	oneshot
