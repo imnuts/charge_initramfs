@@ -766,7 +766,7 @@ service playsound /system/bin/playsound
 	disabled
 	oneshot
 
-service samsungani /system/bin/samsungani
+service samsungani /system/bin/bootanimation
 	user graphics
 	group graphics
 	disabled
@@ -863,3 +863,7 @@ service tvout /system/bin/tvoutserver
 
 service audiotunemode /system/bin/audiotunemode
 	oneshot
+
+on property:sys.boot_completed=1
+	stop samsungani
+
