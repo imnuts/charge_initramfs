@@ -19,7 +19,7 @@ rm -f /system/bin/samsungani
 
 # The binary file needs to be named samsungani or else it will never
 # be killed by the system and the animation keeps looping.
-if ls /system/media/bootanimation.zip || ls /data/local/bootanimation.zip
+if ls /system/media/sanim.zip
 then
 	cp -f /system/bin/bootanimation /system/bin/samsungani
 else
