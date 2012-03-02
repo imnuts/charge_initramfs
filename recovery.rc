@@ -25,6 +25,10 @@ on init
 	mkdir /mnt 0775 root system
 	mkdir /mnt/sdcard 0000 system system
 
+# This may have been created by the recovery system with odd permissions
+	chown system system /cache/recovery
+	chmod 0770 /cache/recovery
+
 on early-fs
 	insmod /lib/modules/fsr.ko
 	insmod /lib/modules/fsr_stl.ko
@@ -37,23 +41,14 @@ on early-fs
 
 on fs
 	mount tmpfs tmpfs /tmp
-	mount rfs /dev/block/stl10 /system check=no
-	mount ext4 /dev/block/stl10 /system noatime barrier=0 data=journal noauto_da_alloc
 
-	chown root root /sbin/fat.format
-	chmod 750 /sbin/fat.format
-
-# SEC_DMCRYPT for MC_CRYPT_ROOT before apply_disk_policy or apply_sec_devenc_init
-	chown radio system /efs
-	chmod 0771 /efs
-	mount rfs /dev/block/stl3 /efs nosuid nodev check=no
+	chown root root /sbin/fatformat
+	chmod 750 /sbin/fatformat
 
 	mkdir /mnt/.lfs 0755 root root
 	mount j4fs /dev/block/stl7 /mnt/.lfs
 
 on post-fs
-	mount rootfs rootfs / ro remount
-
 	write /proc/sys/kernel/panic_on_oops 1
 	write /proc/sys/kernel/hung_task_timeout_secs 0
 	write /proc/cpu/alignment 4
@@ -72,13 +67,18 @@ on boot
 service ueventd /sbin/ueventd
 	critical
 
-service console /system/bin/sh
+service console /sbin/sh
 	console
 
 service recovery /sbin/start_recovery
+	console
+	oneshot
 
 service adbd /sbin/adbd recovery
-#	disabled
+	disabled
 
 on property:persist.service.adb.enable=1
 	start adbd
+
+on property:persist.service.adb.enable=0
+	stop adbd
