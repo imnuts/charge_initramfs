@@ -153,13 +153,13 @@ on fs
 	chmod 0771 /dbdata
 	mkdir /dbdata/databases
 	chown system system /dbdata/databases
-	chmod 0777 /dbdata/databases
+	chmod 0775 /dbdata/databases
 	mkdir /dbdata/system
 	chown system system /dbdata/system
 	chmod 0775 /dbdata/system
-	mkdir /dbdata/db-journal
-	chown system system /dbdata/db-journal
-	chmod 0777 /dbdata/db-journal
+	#mkdir /dbdata/db-journal
+	#chown system system /dbdata/db-journal
+	#chmod 0775 /dbdata/db-journal
 	mount rfs /dev/block/mmcblk0p3 /cache noatime nosuid nodev check=no
 	exec /sbin/e2fsck -p /dev/block/mmcblk0p3
 	mount ext4 /dev/block/mmcblk0p3 /cache noatime barrier=0 data=writeback noauto_da_alloc
@@ -225,12 +225,12 @@ on post-fs
 	mkdir /data/misc/vpn 0770 system system
 	mkdir /data/misc/systemkeys 0700 system system
 	mkdir /data/misc/vpn/profiles 0770 system system
-	mkdir /data/wifi 0777 wifi wifi
+	mkdir /data/wifi 0771 wifi wifi
 	mkdir /data/misc/wifi 0771 wifi wifi
-	chmod 0777 /data/misc/wifi/
-	chmod 0777 /data/wifi/
-	mkdir /data/misc/dhcp 0777 dhcp dhcp
-	mkdir /data/misc/wifi/sockets 0777 wifi wifi
+#	chmod 0777 /data/misc/wifi/
+#	chmod 0777 /data/wifi/
+	mkdir /data/misc/dhcp 0775 dhcp dhcp
+	mkdir /data/misc/wifi/sockets 0775 wifi wifi
 	chmod 0664 /system/etc/wifi/wpa_supplicant.conf
 	chown dhcp dhcp /data/misc/dhcp
 	mkdir /data/misc/dhcpcd 0771 dhcp dhcp
@@ -248,9 +248,11 @@ on post-fs
 	chown system system /data/app
 
 # create log system
-	mkdir /data/log 0777 system system
-	chmod 0777 /data/log
-	chmod 0777 /data/anr
+	mkdir /data/log 0775 system log
+	chown system log /data/log
+
+	chmod 0775 /data/log
+	chmod 0775 /data/anr
 	chmod 0662 /dev/log/radio
 	chmod 0662 /dev/log/main
 	chmod 0662 /dev/log/event
@@ -376,6 +378,7 @@ on post-fs
 	chown root radio /sys/class/net/svnet0/resume
 	chown root radio /sys/class/onedram/onedram/debug
 	chown radio system /sys/class/net/svnet0/waketime
+	chown radio system /sys/class/net/svnet0/ramdump
 	chown radio system /sys/class/net/svnet0/pdp/activate
 	chown radio system /sys/class/net/svnet0/pdp/deactivate
 	chown radio system /sys/class/net/svnet0/pdp/suspend
@@ -387,6 +390,7 @@ on post-fs
 	chown radio system /sys/class/sec/switch/usb_state
 	chown radio system /sys/class/sec/switch/disable_vbus
 	chown radio system /sys/class/sec/switch/UartDebug
+	chown radio system /sys/class/sec/switch/adc
 	chmod 0664 /sys/devices/platform/android_usb/UsbMenuSel
 	chmod 0664 /sys/devices/platform/android_usb/AskOnStatus
 	chown radio system /sys/devices/platform/android_usb/UsbMenuSel
@@ -653,10 +657,6 @@ service enable_logcat /sbin/enable_logcat
 service run_parts /system/xbin/run-parts /system/etc/init.d
 	oneshot
 
-# boot animations
-service animate /sbin/animate
-	oneshot
-
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd
 	disabled
@@ -678,6 +678,8 @@ service pvrsrvinit /system/bin/pvrsrvinit
 	oneshot
 
 service wpa_supplicant /system/bin/wpa_supplicant -Dwext -ieth0 -c/data/wifi/bcm_supp.conf
+	class main
+	socket wpa_eth0 dgram 0660 wifi wifi
 	disabled
 	oneshot
 
@@ -701,6 +703,10 @@ service macloader /system/bin/macloader
 # end of wifi
 
 service dhcpcd /system/bin/dhcpcd
+	disabled
+	oneshot
+
+service iprenew_eth0 /system/bin/dhcpcd -n
 	disabled
 	oneshot
 
@@ -770,10 +776,9 @@ service playsound /system/bin/playsound
 	disabled
 	oneshot
 
-service samsungani /system/bin/samsungani
+service bootanimation /sbin/bootanimation.sh
 	user graphics
 	group graphics
-	disabled
 	oneshot
 
 service dbus /system/bin/dbus-daemon --system --nofork
@@ -869,4 +874,4 @@ service audiotunemode /system/bin/audiotunemode
 	oneshot
 
 on property:sys.boot_completed=1
-	stop samsungani
+	stop bootanimation
