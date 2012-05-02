@@ -770,7 +770,6 @@ service playsound /system/bin/playsound
 service samsungani /system/bin/samsungani
 	user graphics
 	group graphics
-	disabled
 	oneshot
 
 service dbus /system/bin/dbus-daemon --system --nofork
