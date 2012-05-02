@@ -223,8 +223,8 @@ on post-fs
 	mkdir /data/misc/systemkeys 0700 system system
 	mkdir /data/misc/vpn/profiles 0770 system system
 	mkdir /data/wifi 0771 wifi wifi
-	mkdir /data/misc/dhcp 0777 dhcp dhcp
-	mkdir /data/misc/wifi/sockets 0777 wifi wifi
+	mkdir /data/misc/dhcp 0775 dhcp dhcp
+	mkdir /data/misc/wifi/sockets 0775 wifi wifi
 	chmod 0664 /system/etc/wifi/wpa_supplicant.conf
 	chown dhcp dhcp /data/misc/dhcp
 	mkdir /data/misc/dhcpcd 0771 dhcp dhcp
