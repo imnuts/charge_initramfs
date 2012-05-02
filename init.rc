@@ -153,13 +153,10 @@ on fs
 	chmod 0771 /dbdata
 	mkdir /dbdata/databases
 	chown system system /dbdata/databases
-	chmod 0777 /dbdata/databases
+	chmod 0775 /dbdata/databases
 	mkdir /dbdata/system
 	chown system system /dbdata/system
 	chmod 0775 /dbdata/system
-	mkdir /dbdata/db-journal
-	chown system system /dbdata/db-journal
-	chmod 0777 /dbdata/db-journal
 	mount rfs /dev/block/mmcblk0p3 /cache noatime nosuid nodev check=no
 	exec /sbin/e2fsck -p /dev/block/mmcblk0p3
 	mount ext4 /dev/block/mmcblk0p3 /cache noatime barrier=0 data=writeback noauto_da_alloc
@@ -225,10 +222,7 @@ on post-fs
 	mkdir /data/misc/vpn 0770 system system
 	mkdir /data/misc/systemkeys 0700 system system
 	mkdir /data/misc/vpn/profiles 0770 system system
-	mkdir /data/wifi 0777 wifi wifi
-	mkdir /data/misc/wifi 0771 wifi wifi
-	chmod 0777 /data/misc/wifi/
-	chmod 0777 /data/wifi/
+	mkdir /data/wifi 0771 wifi wifi
 	mkdir /data/misc/dhcp 0777 dhcp dhcp
 	mkdir /data/misc/wifi/sockets 0777 wifi wifi
 	chmod 0664 /system/etc/wifi/wpa_supplicant.conf
@@ -248,9 +242,9 @@ on post-fs
 	chown system system /data/app
 
 # create log system
-	mkdir /data/log 0777 system system
-	chmod 0777 /data/log
-	chmod 0777 /data/anr
+	mkdir /data/log 0775 system system
+	chmod 0775 /data/log
+	chmod 0775 /data/anr
 	chmod 0662 /dev/log/radio
 	chmod 0662 /dev/log/main
 	chmod 0662 /dev/log/event
@@ -380,15 +374,16 @@ on post-fs
 	chown radio system /sys/class/net/svnet0/pdp/deactivate
 	chown radio system /sys/class/net/svnet0/pdp/suspend
 	chown radio system /sys/class/net/svnet0/pdp/resume
+	chown radio system /sys/class/net/svnet0/ramdump
 
 # change permissions for USB
-	chown radio system /sys/class/sec/switch/usb_sel
-	chown radio system /sys/class/sec/switch/uart_sel
-	chown radio system /sys/class/sec/switch/usb_state
-	chown radio system /sys/class/sec/switch/disable_vbus
-	chown radio system /sys/class/sec/switch/UartDebug
+	chown system radio /sys/class/sec/switch/usb_sel
+	chown system radio /sys/class/sec/switch/uart_sel
+	chown system radio /sys/class/sec/switch/usb_state
+	chown system radio /sys/class/sec/switch/disable_vbus
+	chown system radio /sys/class/sec/switch/UartDebug
+	chown system radio /sys/class/sec/switch/adc
 	chmod 0664 /sys/devices/platform/android_usb/UsbMenuSel
-	chmod 0664 /sys/devices/platform/android_usb/AskOnStatus
 	chown radio system /sys/devices/platform/android_usb/UsbMenuSel
 
 # change permissions for fuel gauge
@@ -419,7 +414,6 @@ on post-fs
 	chown radio radio /sys/class/power_supply/battery/camera
 	chown radio radio /sys/class/power_supply/battery/data_call
 	chown radio radio /sys/class/power_supply/battery/lte
-	chown radio radio /sys/class/power_supply/battery/gps
 	chown radio system /sys/class/power_supply/battery/batt_use
 
 # for jack control
@@ -497,9 +491,6 @@ on boot
 # to enable wifi
 	setprop wifi.interface "eth0"
 
-# to disable ENFORCED_AUDIBLE stream sound in silent mode
-	setprop ro.camera.sound.forced 0
-
 # Incase socket buffer to 512Kbytes as requested by DMC lab for testing purpose
 	write /proc/sys/net/core/wmem_max 524280
 	write /proc/sys/net/core/wmem_default 524280
@@ -520,33 +511,33 @@ on boot
 
 # Define the memory thresholds at which the above process classes will
 # be killed. These numbers are in pages (4k).
-	setprop ro.FOREGROUND_APP_MEM 2048
-	setprop ro.VISIBLE_APP_MEM 3072
-	setprop ro.PERCEPTIBLE_APP_MEM 4096
-	setprop ro.HEAVY_WEIGHT_APP_MEM 4096
-	setprop ro.SECONDARY_SERVER_MEM 6144
-	setprop ro.BACKUP_APP_MEM 6144
-	setprop ro.HOME_APP_MEM 6144
-	setprop ro.HIDDEN_APP_MEM 11264
-	setprop ro.EMPTY_APP_MEM 16384
+	setprop ro.FOREGROUND_APP_MEM 3072
+	setprop ro.VISIBLE_APP_MEM 4608
+	setprop ro.PERCEPTIBLE_APP_MEM 6144
+	setprop ro.HEAVY_WEIGHT_APP_MEM 6144
+	setprop ro.SECONDARY_SERVER_MEM 9216
+	setprop ro.BACKUP_APP_MEM 9216
+	setprop ro.HOME_APP_MEM 9216
+	setprop ro.HIDDEN_APP_MEM 10752
+	setprop ro.EMPTY_APP_MEM 12288
 
 # Write value must be consistent with the above properties.
 # Note that the driver only supports 6 slots, so we have combined some of
 # the classes into the same memory level; the associated processes of higher
 # classes will still be killed first.
 	write /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,7,15
-	write /sys/module/lowmemorykiller/parameters/minfree 2560,4096,6144,11264,13312,16384
+	write /sys/module/lowmemorykiller/parameters/minfree 3072,4608,6144,9216,10752,12288
 
 # Set init its forked children's oom_adj.
 	write /proc/1/oom_adj -16
 
 # Tweak background writeout
-	write /proc/sys/vm/dirty_background_ratio 50
-	write /proc/sys/vm/dirty_expire_centisecs 100
+	write /proc/sys/vm/dirty_background_ratio 5
+	write /proc/sys/vm/dirty_expire_centisecs 200
 	write /proc/sys/vm/dirty_ratio 75
 	write /proc/sys/vm/drop_caches 3
 	write /proc/sys/vm/min_free_order_shift 4
-	write /proc/sys/vm/overcommit_memory 0
+	write /proc/sys/vm/overcommit_memory 1
 	write /proc/sys/vm/vfs_cache_pressure 200
 	write /proc/sys/vm/swappiness 0
 
@@ -678,6 +669,8 @@ service pvrsrvinit /system/bin/pvrsrvinit
 	oneshot
 
 service wpa_supplicant /system/bin/wpa_supplicant -Dwext -ieth0 -c/data/wifi/bcm_supp.conf
+	class main
+	socket wpa_eth0 dgram 0660 wifi wifi
 	disabled
 	oneshot
 
@@ -701,6 +694,10 @@ service macloader /system/bin/macloader
 # end of wifi
 
 service dhcpcd /system/bin/dhcpcd
+	disabled
+	oneshot
+
+service iprenew_eth0 /system/bin/dhcpcd -n
 	disabled
 	oneshot
 
