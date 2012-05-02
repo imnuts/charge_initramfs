@@ -17,6 +17,13 @@ fi
 # Remove current binary
 rm -f /system/bin/samsungani
 
+# Check to see if we have a standard bootanimation.zip file, and fi so
+# move it to sanim.zip
+if ls /system/media/bootanimation.zip
+then
+	mv /system/media/bootanimation.zip /system/media/sanim.zip
+fi
+
 # The binary file needs to be named samsungani or else it will never
 # be killed by the system and the animation keeps looping.
 if ls /system/media/sanim.zip
