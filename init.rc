@@ -223,6 +223,7 @@ on post-fs
 	mkdir /data/misc/systemkeys 0700 system system
 	mkdir /data/misc/vpn/profiles 0770 system system
 	mkdir /data/wifi 0771 wifi wifi
+	mkdir /data/misc/wifi 0771 wifi wifi
 	mkdir /data/misc/dhcp 0775 dhcp dhcp
 	mkdir /data/misc/wifi/sockets 0775 wifi wifi
 	chmod 0664 /system/etc/wifi/wpa_supplicant.conf
@@ -384,6 +385,7 @@ on post-fs
 	chown system radio /sys/class/sec/switch/UartDebug
 	chown system radio /sys/class/sec/switch/adc
 	chmod 0664 /sys/devices/platform/android_usb/UsbMenuSel
+	chmod 0664 /sys/devices/platform/android_usb/AskOnStatus
 	chown radio system /sys/devices/platform/android_usb/UsbMenuSel
 
 # change permissions for fuel gauge
