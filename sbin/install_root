@@ -11,10 +11,10 @@ then
 	rm -f /system/xbin/su
 	cp -f /res/su /system/bin/su
 	ln -s /system/bin/su /system/xbin/su
-	chown 0:0 /system/bin/su
-	chmod 6755 /system/bin/su
 fi
 rm -f /res/su
+chown 0:0 /system/bin/su
+chmod 6755 /system/bin/su
 
 mount -o remount,ro /
 mount -o remount,ro /dev/block/stl10 /system
