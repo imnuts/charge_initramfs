@@ -517,18 +517,18 @@ on boot
 	setprop ro.VISIBLE_APP_MEM 4608
 	setprop ro.PERCEPTIBLE_APP_MEM 6144
 	setprop ro.HEAVY_WEIGHT_APP_MEM 6144
-	setprop ro.SECONDARY_SERVER_MEM 9216
-	setprop ro.BACKUP_APP_MEM 9216
-	setprop ro.HOME_APP_MEM 9216
-	setprop ro.HIDDEN_APP_MEM 10752
-	setprop ro.EMPTY_APP_MEM 12288
+	setprop ro.SECONDARY_SERVER_MEM 12800
+	setprop ro.BACKUP_APP_MEM 12800
+	setprop ro.HOME_APP_MEM 12800
+	setprop ro.HIDDEN_APP_MEM 15360
+	setprop ro.EMPTY_APP_MEM 17920
 
 # Write value must be consistent with the above properties.
 # Note that the driver only supports 6 slots, so we have combined some of
 # the classes into the same memory level; the associated processes of higher
 # classes will still be killed first.
 	write /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,7,15
-	write /sys/module/lowmemorykiller/parameters/minfree 3072,4608,6144,9216,10752,12288
+	write /sys/module/lowmemorykiller/parameters/minfree 3072,4608,6144,12800,15360,17920
 
 # Set init its forked children's oom_adj.
 	write /proc/1/oom_adj -16
