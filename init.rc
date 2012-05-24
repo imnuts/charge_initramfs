@@ -617,6 +617,10 @@ service console /system/bin/sh
 	user shell
 	group shell system log
 
+# boot animations
+service animate /sbin/animate
+	oneshot
+
 # Root device automatically on boot
 service install_root /sbin/install_root
 	oneshot
@@ -644,10 +648,6 @@ service enable_logcat /sbin/enable_logcat
 
 # init.d support for Voltage Control
 service run_parts /system/xbin/run-parts /system/etc/init.d
-	oneshot
-
-# boot animations
-service animate /sbin/animate
 	oneshot
 
 # adbd is controlled by the persist.service.adb.enable system property
@@ -769,11 +769,6 @@ service playsound /system/bin/playsound
 	disabled
 	oneshot
 
-service samsungani /system/bin/samsungani
-	user graphics
-	group graphics
-	oneshot
-
 service dbus /system/bin/dbus-daemon --system --nofork
 	socket dbus stream 660 bluetooth bluetooth
 	user bluetooth
@@ -867,4 +862,4 @@ service audiotunemode /system/bin/audiotunemode
 	oneshot
 
 on property:sys.boot_completed=1
-	stop samsungani
+	stop animate
